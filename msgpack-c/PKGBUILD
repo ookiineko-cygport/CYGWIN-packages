@@ -1,4 +1,5 @@
-# Maintainer: Johannes Schindelin <johannes.schindelin@gmx.de>
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Johannes Schindelin <johannes.schindelin@gmx.de>
 
 pkgbase=msgpack-c
 pkgname=('msgpack-c' 'msgpack-c-devel')
@@ -8,7 +9,6 @@ pkgdesc="MessagePack implementation for C"
 arch=('i686' 'x86_64')
 url="https://msgpack.org"
 license=('Boost')
-makedepends=('cmake' 'gcc' 'make')
 options=('strip' '!debug')
 source=("https://github.com/msgpack/msgpack-c/releases/download/c-${pkgver}/${pkgbase}-${pkgver}.tar.gz")
 sha256sums=('420fe35e7572f2a168d17e660ef981a589c9cbe77faa25eb34a520e1fcc032c8')
@@ -30,7 +30,6 @@ build() {
 
 package_msgpack-c() {
   pkgdesc="MessagePack implementation for C (runtime)"
-  depends=('zlib')
   groups=('libraries')
 
   install -d -m755 ${pkgdir}/usr/bin
@@ -43,7 +42,6 @@ package_msgpack-c() {
 
 package_msgpack-c-devel() {
   pkgdesc="MessagePack implementation for C (headers & libraries)"
-  depends=('zlib-devel')
   groups=('development')
 
   install -d -m755 ${pkgdir}/usr/include
@@ -51,4 +49,7 @@ package_msgpack-c-devel() {
 
   install -d -m755 ${pkgdir}/usr/lib
   cp -rf ${srcdir}/dest/usr/lib/* ${pkgdir}/usr/lib/
+
+  # correct mode
+  chmod 775 ${pkgdir}/usr/lib/cmake
 }

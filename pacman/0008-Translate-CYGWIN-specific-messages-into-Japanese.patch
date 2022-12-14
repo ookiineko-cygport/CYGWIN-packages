@@ -1,7 +1,7 @@
-From d2183ca4914b79bf7657a34fc5769e44f17f0ab9 Mon Sep 17 00:00:00 2001
+From 6c40647f2f3b576cb64421bbbffd49c06570a8ab Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Fri, 21 May 2021 22:58:41 +0200
-Subject: [PATCH 11/N] Translate MSYS2 specific messages into Japanese
+Subject: [PATCH 08/N] Translate CYGWIN specific messages into Japanese
 
 ---
  src/pacman/po/ja.po | 24 ++++++++++++++++++++++++

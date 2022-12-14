@@ -1,34 +1,33 @@
-# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
 # Contributor: Martell Malone <martellmalone@gmail.com>
 # Contributor: Ray Donnelly <mingw.android@gmail.com>
 
 pkgname=pacman-contrib
 pkgver=1.8.0
 pkgrel=1
-pkgdesc="Contributed scripts and tools for pacman systems (MSYS2 port)"
+pkgdesc="Contributed scripts and tools for pacman systems (CYGWIN port)"
 arch=('i686' 'x86_64')
 url="https://gitlab.archlinux.org/pacman/pacman-contrib"
 license=('spdx:GPL-2.0-or-later')
-depends=('perl'
-         'pacman'
-         'bash')
-optdepends=('vim')
-makedepends=('asciidoc'
-             'libarchive-devel'
-             'libcurl-devel'
-             'libgpgme-devel'
-             'autotools'
-             'gcc'
-             )
+depends=('pacman')
 source=(https://gitlab.archlinux.org/pacman/pacman-contrib/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz
-        "0100-contrib.patch")
+        "0100-contrib.patch"
+        "0101-disable-static.patch"
+        "0102-epoch-separator.patch")
 sha256sums=('80fb41d0b79845e4707ab59af9f098450b071bb5d9bb4bf7fb7911535a871658'
-            '74acb78f254e7749e67139156221aec50190463debc842b85568d4fb2fa8ac30')
+            '5c00e26984714d2ce8e75f279951b23ab5c5eb6416ff13259e83683c598a0e88'
+            '77f70359f98d569252e881995cda351f7104d852b04e3019aed22697a37367ba'
+            'f24c508240aa22480a0ad651126e1623607f3c9196f2c36dae523c367d9cfa83')
 
 prepare() {
   cd ${srcdir}/${pkgname}-v${pkgver}
 
   patch -p1 -i ${srcdir}/0100-contrib.patch
+
+  patch -p1 -i ${srcdir}/0101-disable-static.patch
+
+  patch -p2 -i ${srcdir}/0102-epoch-separator.patch
 
   ./autogen.sh
 }
@@ -55,4 +54,7 @@ package() {
   cd ${srcdir}/${pkgname}-v${pkgver}
 
   make -j1 DESTDIR=${pkgdir} install
+
+  # correct mode
+  chmod 775 `find ${pkgdir}/usr/share/{vim,zsh} -type d`
 }

@@ -1,12 +1,21 @@
-From aa2196e3a9bd764c9a4e2d268f7bf69da3afc2b8 Mon Sep 17 00:00:00 2001
+From 972bbca52c067f9bdce8e15148230788888ee2e3 Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Fri, 21 May 2021 22:54:23 +0200
 Subject: [PATCH 05/N] Change the epoch separator
 
 ---
- lib/libalpm/version.c                  | 6 +++++-
- scripts/libmakepkg/util/pkgbuild.sh.in | 6 +++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ lib/libalpm/version.c                  |  6 +++++-
+ scripts/libmakepkg/util/pkgbuild.sh.in |  6 +++++-
+ test/pacman/tests/epoch001.py          |  4 ++--
+ test/pacman/tests/epoch002.py          |  2 +-
+ test/pacman/tests/epoch003.py          |  6 +++---
+ test/pacman/tests/epoch004.py          |  6 +++---
+ test/pacman/tests/epoch005.py          | 10 +++++-----
+ test/pacman/tests/epoch010.py          |  4 ++--
+ test/pacman/tests/epoch011.py          |  6 +++---
+ test/pacman/tests/epoch012.py          |  4 ++--
+ test/util/vercmptest.sh                | 26 +++++++++++++-------------
+ 11 files changed, 44 insertions(+), 36 deletions(-)
 
 diff --git a/lib/libalpm/version.c b/lib/libalpm/version.c
 index 00cc779..6b9d05d 100644
@@ -50,3 +59,195 @@ index 7aab705..2d4dd2d 100644
  	else
  		printf "%s\n" "$pkgver-$pkgrel"
  	fi
+diff --git a/test/pacman/tests/epoch001.py b/test/pacman/tests/epoch001.py
+index ac6c41a..3d09e7e 100644
+--- a/test/pacman/tests/epoch001.py
++++ b/test/pacman/tests/epoch001.py
+@@ -1,6 +1,6 @@
+ self.description = "Sysupgrade with a sync package having higher epoch"
+ 
+-sp = pmpkg("dummy", "1:1.0-1")
++sp = pmpkg("dummy", "1~1.0-1")
+ self.addpkg2db("sync", sp)
+ 
+ lp = pmpkg("dummy", "1.1-1")
+@@ -9,4 +9,4 @@ self.addpkg2db("local", lp)
+ self.args = "-Su"
+ 
+ self.addrule("PACMAN_RETCODE=0")
+-self.addrule("PKG_VERSION=dummy|1:1.0-1")
++self.addrule("PKG_VERSION=dummy|1~1.0-1")
+diff --git a/test/pacman/tests/epoch002.py b/test/pacman/tests/epoch002.py
+index 8ca4afc..11ebc32 100644
+--- a/test/pacman/tests/epoch002.py
++++ b/test/pacman/tests/epoch002.py
+@@ -3,7 +3,7 @@ self.description = "Sysupgrade with an epoch and ignore on same package"
+ lp = pmpkg("dummy", "1.0-1")
+ self.addpkg2db("local", lp)
+ 
+-sp = pmpkg("dummy", "1:1.0-2")
++sp = pmpkg("dummy", "1~1.0-2")
+ self.addpkg2db("sync", sp)
+ 
+ self.args = "-Su --ignore %s" % lp.name
+diff --git a/test/pacman/tests/epoch003.py b/test/pacman/tests/epoch003.py
+index ac395e3..22f39df 100644
+--- a/test/pacman/tests/epoch003.py
++++ b/test/pacman/tests/epoch003.py
+@@ -1,12 +1,12 @@
+ self.description = "Sysupgrade with an epoch package overriding a force package"
+ 
+-sp = pmpkg("dummy", "2:1.4-1")
++sp = pmpkg("dummy", "2~1.4-1")
+ self.addpkg2db("sync", sp)
+ 
+-lp = pmpkg("dummy", "1:2.0-1")
++lp = pmpkg("dummy", "1~2.0-1")
+ self.addpkg2db("local", lp)
+ 
+ self.args = "-Su"
+ 
+ self.addrule("PACMAN_RETCODE=0")
+-self.addrule("PKG_VERSION=dummy|2:1.4-1")
++self.addrule("PKG_VERSION=dummy|2~1.4-1")
+diff --git a/test/pacman/tests/epoch004.py b/test/pacman/tests/epoch004.py
+index 74b00c2..a31c4c6 100644
+--- a/test/pacman/tests/epoch004.py
++++ b/test/pacman/tests/epoch004.py
+@@ -1,16 +1,16 @@
+ self.description = "Sysupgrade with same version, different epochs"
+ 
+-sp = pmpkg("dummy", "2:2.0-1")
++sp = pmpkg("dummy", "2~2.0-1")
+ sp.files = ["bin/dummynew"]
+ self.addpkg2db("sync", sp)
+ 
+-lp = pmpkg("dummy", "1:2.0-1")
++lp = pmpkg("dummy", "1~2.0-1")
+ lp.files = ["bin/dummyold"]
+ self.addpkg2db("local", lp)
+ 
+ self.args = "-Su"
+ 
+ self.addrule("PACMAN_RETCODE=0")
+-self.addrule("PKG_VERSION=dummy|2:2.0-1")
++self.addrule("PKG_VERSION=dummy|2~2.0-1")
+ self.addrule("FILE_EXIST=bin/dummynew")
+ self.addrule("!FILE_EXIST=bin/dummyold")
+diff --git a/test/pacman/tests/epoch005.py b/test/pacman/tests/epoch005.py
+index 6215170..8015d78 100644
+--- a/test/pacman/tests/epoch005.py
++++ b/test/pacman/tests/epoch005.py
+@@ -1,11 +1,11 @@
+ self.description = "Sysupgrade with sync packages having absurd epochs"
+ 
+ versions = (
+-	"1234327518932650063289125782697890:1.0-1",
+-	"1234327518932650063289125782697891:0.9-1",
+-	"1234327518932650063289125782697891:1.0-1",
+-	"1234327518932650063289125782697891:1.1-1",
+-	"1234327518932650063289125782697892:1.0-1",
++	"1234327518932650063289125782697890~1.0-1",
++	"1234327518932650063289125782697891~0.9-1",
++	"1234327518932650063289125782697891~1.0-1",
++	"1234327518932650063289125782697891~1.1-1",
++	"1234327518932650063289125782697892~1.0-1",
+ )
+ 
+ pkgvers = [(n, versions[n]) for n in range(len(versions))]
+diff --git a/test/pacman/tests/epoch010.py b/test/pacman/tests/epoch010.py
+index 03bba27..65253ae 100644
+--- a/test/pacman/tests/epoch010.py
++++ b/test/pacman/tests/epoch010.py
+@@ -1,6 +1,6 @@
+ self.description = "usbutils case study: force in new package"
+ 
+-sp = pmpkg("usbutils", "1:001-1")
++sp = pmpkg("usbutils", "1~001-1")
+ self.addpkg2db("sync", sp)
+ 
+ lp = pmpkg("usbutils", "0.91-4")
+@@ -9,4 +9,4 @@ self.addpkg2db("local", lp)
+ self.args = "-Su"
+ 
+ self.addrule("PACMAN_RETCODE=0")
+-self.addrule("PKG_VERSION=usbutils|1:001-1")
++self.addrule("PKG_VERSION=usbutils|1~001-1")
+diff --git a/test/pacman/tests/epoch011.py b/test/pacman/tests/epoch011.py
+index bc5ee61..7356efa 100644
+--- a/test/pacman/tests/epoch011.py
++++ b/test/pacman/tests/epoch011.py
+@@ -1,12 +1,12 @@
+ self.description = "usbutils case study: force stays, epoch now in local db"
+ 
+-sp = pmpkg("usbutils", "1:002-1")
++sp = pmpkg("usbutils", "1~002-1")
+ self.addpkg2db("sync", sp)
+ 
+-lp = pmpkg("usbutils", "1:001-1")
++lp = pmpkg("usbutils", "1~001-1")
+ self.addpkg2db("local", lp)
+ 
+ self.args = "-Su"
+ 
+ self.addrule("PACMAN_RETCODE=0")
+-self.addrule("PKG_VERSION=usbutils|1:002-1")
++self.addrule("PKG_VERSION=usbutils|1~002-1")
+diff --git a/test/pacman/tests/epoch012.py b/test/pacman/tests/epoch012.py
+index 2a7a7ac..10b1005 100644
+--- a/test/pacman/tests/epoch012.py
++++ b/test/pacman/tests/epoch012.py
+@@ -3,11 +3,11 @@ self.description = "usbutils case study: maintainer screws up and removes force"
+ sp = pmpkg("usbutils", "003-1")
+ self.addpkg2db("sync", sp)
+ 
+-lp = pmpkg("usbutils", "1:002-1")
++lp = pmpkg("usbutils", "1~002-1")
+ self.addpkg2db("local", lp)
+ 
+ self.args = "-Su"
+ 
+ self.addrule("PACMAN_RETCODE=0")
+ # remember, this is how we have to handle this- 003 will not be installed
+-self.addrule("PKG_VERSION=usbutils|1:002-1")
++self.addrule("PKG_VERSION=usbutils|1~002-1")
+diff --git a/test/util/vercmptest.sh b/test/util/vercmptest.sh
+index d6e5336..7fad795 100755
+--- a/test/util/vercmptest.sh
++++ b/test/util/vercmptest.sh
+@@ -95,22 +95,22 @@ tap_runtest 2.0a   2.0.a  -1
+ tap_runtest 2___a  2_a     1
+ 
+ # epoch included version comparisons
+-tap_runtest 0:1.0    0:1.0   0
+-tap_runtest 0:1.0    0:1.1  -1
+-tap_runtest 1:1.0    0:1.0   1
+-tap_runtest 1:1.0    0:1.1   1
+-tap_runtest 1:1.0    2:1.1  -1
++tap_runtest 0~1.0    0~1.0   0
++tap_runtest 0~1.0    0~1.1  -1
++tap_runtest 1~1.0    0~1.0   1
++tap_runtest 1~1.0    0~1.1   1
++tap_runtest 1~1.0    2~1.1  -1
+ 
+ # epoch + sometimes present pkgrel
+-tap_runtest 1:1.0    0:1.0-1  1
+-tap_runtest 1:1.0-1  0:1.1-1  1
++tap_runtest 1~1.0    0~1.0-1  1
++tap_runtest 1~1.0-1  0~1.1-1  1
+ 
+ # epoch included on one version
+-tap_runtest 0:1.0    1.0   0
+-tap_runtest 0:1.0    1.1  -1
+-tap_runtest 0:1.1    1.0   1
+-tap_runtest 1:1.0    1.0   1
+-tap_runtest 1:1.0    1.1   1
+-tap_runtest 1:1.1    1.1   1
++tap_runtest 0~1.0    1.0   0
++tap_runtest 0~1.0    1.1  -1
++tap_runtest 0~1.1    1.0   1
++tap_runtest 1~1.0    1.0   1
++tap_runtest 1~1.0    1.1   1
++tap_runtest 1~1.1    1.1   1
+ 
+ tap_finish

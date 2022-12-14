@@ -1,8 +1,9 @@
-From e9ce0316ebcbddcc07d0ee0a47324d94c70ca8c7 Mon Sep 17 00:00:00 2001
+From ec96955dffd32da5985e0109d1a78fc408e78ac3 Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Thu, 3 Jun 2021 16:22:43 +0200
 Subject: [PATCH 01/N] Msysize
 
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
 ---
  lib/libalpm/add.c                             |   2 +
  .../lint_package/build_references.sh.in       |   8 +
@@ -15,10 +16,9 @@ Subject: [PATCH 01/N] Msysize
  scripts/repo-add.sh.in                        |  11 +-
  scripts/wrapper.sh.in                         |   2 +-
  src/pacman/callback.c                         |   7 +-
- src/pacman/check.c                            |   2 +
  src/pacman/pacman.c                           |   4 +
  test/pacman/pmtest.py                         |  19 +-
- 14 files changed, 283 insertions(+), 198 deletions(-)
+ 13 files changed, 281 insertions(+), 198 deletions(-)
  create mode 100644 scripts/libmakepkg/utils_fixed_path.sh.in
 
 diff --git a/lib/libalpm/add.c b/lib/libalpm/add.c
@@ -852,26 +852,6 @@ index 75c74f8..2f07512 100644
  	const int hash = bar_percent * hashlen / 100;
  	static int lasthash = 0, mouth = 0;
  	int i;
-diff --git a/src/pacman/check.c b/src/pacman/check.c
-index 091055f..188f515 100644
---- a/src/pacman/check.c
-+++ b/src/pacman/check.c
-@@ -75,6 +75,7 @@ static int check_file_permissions(const char *pkgname, const char *filepath,
- 	int errors = 0;
- 	mode_t fsmode;
- 
-+#ifndef __MSYS__
- 	/* uid */
- 	if(st->st_uid != archive_entry_uid(entry)) {
- 		errors++;
-@@ -92,6 +93,7 @@ static int check_file_permissions(const char *pkgname, const char *filepath,
- 					pkgname, filepath);
- 		}
- 	}
-+#endif
- 
- 	/* mode */
- 	fsmode = st->st_mode & (S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO);
 diff --git a/src/pacman/pacman.c b/src/pacman/pacman.c
 index e398855..36c3b5e 100644
 --- a/src/pacman/pacman.c
@@ -901,7 +881,7 @@ index e398855..36c3b5e 100644
  	/* we support reading targets from stdin if a cmdline parameter is '-' */
  	if(alpm_list_find_str(pm_targets, "-")) {
 diff --git a/test/pacman/pmtest.py b/test/pacman/pmtest.py
-index 94b0930..f008f22 100644
+index 94b0930..57ba4d0 100644
 --- a/test/pacman/pmtest.py
 +++ b/test/pacman/pmtest.py
 @@ -239,19 +239,6 @@ class pmtest(object):
@@ -933,7 +913,7 @@ index 94b0930..f008f22 100644
 +        self.retcode = subprocess.call(cmd,
 +                cwd=os.path.join(self.root, util.TMPDIR),
 +                env={'LC_ALL': 'C', 'PATH': os.environ['PATH']},
-+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
++                stdout=output, stderr=output)
          time_end = time.time()
          vprint("\ttime elapsed: %.2fs" % (time_end - time_start))
  

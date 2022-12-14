@@ -1,7 +1,7 @@
-From 61a06846a149e3843758b9a3a8efaf896d66cc50 Mon Sep 17 00:00:00 2001
+From 818ce5cdc3a6767f91b108214277eed1d3ac2fbf Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Mon, 7 Feb 2022 19:55:55 +0100
-Subject: [PATCH 22/N] fixup! Export CC and CXX variables explicitly
+Subject: [PATCH 17/N] fixup! Export CC and CXX variables explicitly
 
 ---
  scripts/libmakepkg/buildenv/buildflags.sh.in | 2 +-

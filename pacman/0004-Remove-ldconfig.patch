@@ -1,4 +1,4 @@
-From c32c180cb82c9c585280c4d52c7c8ee14bb7c8f1 Mon Sep 17 00:00:00 2001
+From 226f9d5f25eafb6739c281218b810a064194ff3e Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Fri, 21 May 2021 22:53:34 +0200
 Subject: [PATCH 04/N] Remove ldconfig
@@ -162,7 +162,7 @@ index 184f94d..5e042fd 100755
      env.config["nls"] = not opts.missing_nls
      env.config["curl"] = not opts.missing_curl
 diff --git a/test/pacman/pmtest.py b/test/pacman/pmtest.py
-index f008f22..e6a3fbd 100644
+index 57ba4d0..7050640 100644
 --- a/test/pacman/pmtest.py
 +++ b/test/pacman/pmtest.py
 @@ -133,12 +133,10 @@ class pmtest(object):

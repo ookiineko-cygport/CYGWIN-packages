@@ -1,0 +1,26 @@
+From d45c7d088a1ef9c703bbbe1db9826dc39f40fe50 Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Wed, 14 Dec 2022 23:10:31 +0800
+Subject: [PATCH] disable static
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ src/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 1a2ef5c..f3ece18 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -101,7 +101,7 @@ AM_CFLAGS = \
+ 	$(LIBARCHIVE_CFLAGS) \
+ 	$(LIBALPM_CFLAGS)
+ 
+-AM_LDFLAGS = --static
++# AM_LDFLAGS = --static
+ 
+ edit = sed \
+ 	-e 's|@bindir[@]|$(bindir)|g' \
+-- 
+2.39.0
+

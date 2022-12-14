@@ -1,7 +1,7 @@
-From 0eb29125b56f6fb947cb22516daaabc7f9447a46 Mon Sep 17 00:00:00 2001
+From 92af659ad3ec80f2a78722d1933ebffa845d9141 Mon Sep 17 00:00:00 2001
 From: Christopher Degawa <ccom@randomderp.com>
 Date: Wed, 18 Aug 2021 10:00:26 -0500
-Subject: [PATCH 18/N] pacman.c: handle cr on stdin as well
+Subject: [PATCH 14/N] pacman.c: handle cr on stdin as well
 
 Improves compatibility with Windows targets, specifically when using
 powershell for string transforming package names and piping into

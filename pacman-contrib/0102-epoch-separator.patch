@@ -1,0 +1,15 @@
+--- src/pacman-contrib-v1.8.0/test/pacsorttest.sh	2022-11-02 08:51:18.000000000 +0800
++++ src.patched/pacman-contrib-v1.8.0/test/pacsorttest.sh	2022-12-16 10:46:16.914405000 +0800
+@@ -73,10 +73,10 @@
+ in="firefox-18.0-2-i686.pkg.tar.xz\nfirefox-18.0.1-1-x86_64.pkg.tar.gz\n"
+ tap_runtest $in $in "filename sort with different extensions" "--files"
+ 
+-in="/packages/dialog-1.2_20131001-1-x86_64.pkg.tar.xz\n/packages/dialog-1:1.2_20130928-1-x86_64.pkg.tar.xz\n"
++in="/packages/dialog-1.2_20131001-1-x86_64.pkg.tar.xz\n/packages/dialog-1~1.2_20130928-1-x86_64.pkg.tar.xz\n"
+ tap_runtest $in $in "filename sort with epoch" "--files"
+ 
+-in="/packages/dia-log-1:1.2_20130928-1-x86_64.pkg.tar.xz\n/packages/dialog-1.2_20131001-1-x86_64.pkg.tar.xz\n"
++in="/packages/dia-log-1~1.2_20130928-1-x86_64.pkg.tar.xz\n/packages/dialog-1.2_20131001-1-x86_64.pkg.tar.xz\n"
+ tap_runtest $in $in "filename sort with differing package names and epoch" "--files"
+ 
+ in="/packages/systemd-217-1-x86_64.pkg.tar.xz\n/packages/systemd-sysvcompat-217-1-x86_64.pkg.tar.xz\n"

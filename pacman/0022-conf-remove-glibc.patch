@@ -1,0 +1,25 @@
+From 3edb137e03027695122265904a24905dc1d7b37a Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Wed, 14 Dec 2022 21:01:52 +0800
+Subject: [PATCH 22/N] conf: remove glibc
+
+- we don't have this package at all
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ etc/pacman.conf.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/etc/pacman.conf.in b/etc/pacman.conf.in
+index 1799efc..2639321 100644
+--- a/etc/pacman.conf.in
++++ b/etc/pacman.conf.in
+@@ -15,7 +15,7 @@
+ #LogFile     = @localstatedir@/log/pacman.log
+ #GPGDir      = @sysconfdir@/pacman.d/gnupg/
+ #HookDir     = @sysconfdir@/pacman.d/hooks/
+-HoldPkg     = pacman glibc
++HoldPkg     = pacman
+ #XferCommand = /usr/bin/curl -L -C - -f -o %o %u
+ #XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u
+ #CleanMethod = KeepInstalled

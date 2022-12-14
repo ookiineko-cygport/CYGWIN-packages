@@ -1,0 +1,481 @@
+From 8a5be90be7bb2bde846d72dae42fd3e2d90cec1d Mon Sep 17 00:00:00 2001
+From: Ookiineko <chiisaineko@protonmail.com>
+Date: Wed, 14 Dec 2022 16:59:39 +0800
+Subject: [PATCH 20/N] Cygwinize
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ lib/libalpm/add.c                             |  8 ++++----
+ lib/libalpm/alpm.h                            |  2 +-
+ lib/libalpm/conflict.c                        |  6 +++---
+ lib/libalpm/package.c                         |  6 +++---
+ lib/libalpm/remove.c                          |  4 ++--
+ lib/libalpm/sync.c                            |  6 +++---
+ lib/libalpm/util.c                            | 12 +++++------
+ lib/libalpm/version.c                         |  2 +-
+ .../lint_package/build_references.sh.in       |  2 +-
+ scripts/libmakepkg/util/pkgbuild.sh.in        |  2 +-
+ scripts/libmakepkg/utils_fixed_path.sh.in     |  2 +-
+ scripts/makepkg.sh.in                         |  6 +++---
+ src/pacman/pacman.c                           |  6 +++---
+ src/pacman/po/ja.po                           | 12 +++++------
+ src/pacman/sighandler.c                       |  6 +++---
+ src/pacman/sync.c                             | 20 +++++++++----------
+ 16 files changed, 51 insertions(+), 51 deletions(-)
+
+diff --git a/lib/libalpm/add.c b/lib/libalpm/add.c
+index 174e051..4ae2415 100644
+--- a/lib/libalpm/add.c
++++ b/lib/libalpm/add.c
+@@ -266,7 +266,7 @@ static int extract_single_file(alpm_handle_t *handle, struct archive *archive,
+ 					"filesystem: %o  package: %o\n", filename, lsbuf.st_mode & mask,
+ 					entrymode & mask);
+ 		}
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 
+ #if 0
+ 		/* Disable this warning until our user management in packages has improved.
+@@ -657,7 +657,7 @@ static int commit_single_pkg(alpm_handle_t *handle, alpm_pkg_t *newpkg,
+ int _alpm_upgrade_packages(alpm_handle_t *handle)
+ {
+ 	size_t pkg_count, pkg_current;
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 	int skip_ldconfig = 0;
+ #endif
+ 	int ret = 0;
+@@ -683,7 +683,7 @@ int _alpm_upgrade_packages(alpm_handle_t *handle)
+ 			/* something screwed up on the commit, abort the trans */
+ 			trans->state = STATE_INTERRUPTED;
+ 			handle->pm_errno = ALPM_ERR_TRANS_ABORT;
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 			/* running ldconfig at this point could possibly screw system */
+ 			skip_ldconfig = 1;
+ #endif
+@@ -693,7 +693,7 @@ int _alpm_upgrade_packages(alpm_handle_t *handle)
+ 		pkg_current++;
+ 	}
+ 
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 	if(!skip_ldconfig) {
+ 		/* run ldconfig if it exists */
+ 		_alpm_ldconfig(handle);
+diff --git a/lib/libalpm/alpm.h b/lib/libalpm/alpm.h
+index c65bc6e..5e3d7df 100644
+--- a/lib/libalpm/alpm.h
++++ b/lib/libalpm/alpm.h
+@@ -2805,7 +2805,7 @@ int alpm_trans_release(alpm_handle_t *handle);
+  * @return 0 on success, -1 on error (pm_errno is set accordingly)
+  */
+ int alpm_sync_sysupgrade(alpm_handle_t *handle, int enable_downgrade);
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ int alpm_sync_sysupgrade_core(alpm_handle_t *handle, int enable_downgrade);
+ 
+ /** Informs whether a package is a core package.
+diff --git a/lib/libalpm/conflict.c b/lib/libalpm/conflict.c
+index f7fa9d8..54fe3ec 100644
+--- a/lib/libalpm/conflict.c
++++ b/lib/libalpm/conflict.c
+@@ -521,8 +521,8 @@ alpm_list_t *_alpm_db_find_fileconflicts(alpm_handle_t *handle,
+ 
+ 			_alpm_log(handle, ALPM_LOG_DEBUG, "checking possible conflict: %s\n", path);
+ 
+-#ifdef __MSYS__
+-			/* In case a file "foo.exe" gets renamed to "foo" the msys2 .exe
++#ifdef __CYGWIN__
++			/* In case a file "foo.exe" gets renamed to "foo" the cygwin .exe
+ 			 * interpolation makes pacman think an untracker file is replaced.
+ 			 * In case foo and foo.exe are the same file and foo.exe existed
+ 			 * in the old package version we can be sure it's handled by the
+@@ -539,7 +539,7 @@ alpm_list_t *_alpm_db_find_fileconflicts(alpm_handle_t *handle,
+ 
+ 					if(same_file && old_contains_exe) {
+ 						_alpm_log(handle, ALPM_LOG_DEBUG,
+-								"MSYS2 special case: Found %s which is the same file and included in the old package\n",
++								"CYGWIN special case: Found %s which is the same file and included in the old package\n",
+ 								path_exe);
+ 						continue;
+ 					}
+diff --git a/lib/libalpm/package.c b/lib/libalpm/package.c
+index 8f592ad..2cb1779 100644
+--- a/lib/libalpm/package.c
++++ b/lib/libalpm/package.c
+@@ -804,18 +804,18 @@ int SYMEXPORT alpm_pkg_should_ignore(alpm_handle_t *handle, alpm_pkg_t *pkg)
+ 	return 0;
+ }
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ int SYMEXPORT alpm_pkg_is_core_package(const alpm_pkg_t *pkg)
+ {
+ 	if (pkg == NULL)
+ 		return 0;
+ 	return
+-		strcmp(pkg->name, "bash")                == 0 ||
++		/* strcmp(pkg->name, "bash")                == 0 ||
+ 		strcmp(pkg->name, "filesystem")          == 0 ||
+ 		strcmp(pkg->name, "mintty")              == 0 ||
+ 		strcmp(pkg->name, "msys2-runtime")       == 0 ||
+ 		strcmp(pkg->name, "msys2-runtime-devel") == 0 ||
+-		strcmp(pkg->name, "pacman")              == 0 ||
++		strcmp(pkg->name, "pacman")              == 0 || */
+ 		strcmp(pkg->name, "pacman-mirrors")      == 0;
+ }
+ #endif
+diff --git a/lib/libalpm/remove.c b/lib/libalpm/remove.c
+index e7d9cc2..50ef1ce 100644
+--- a/lib/libalpm/remove.c
++++ b/lib/libalpm/remove.c
+@@ -765,7 +765,7 @@ int _alpm_remove_packages(alpm_handle_t *handle, int run_ldconfig)
+ 		if(_alpm_remove_single_package(handle, pkg, NULL,
+ 					targ_count, pkg_count) == -1) {
+ 			handle->pm_errno = ALPM_ERR_TRANS_ABORT;
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 			/* running ldconfig at this point could possibly screw system */
+ 			run_ldconfig = 0;
+ #endif
+@@ -775,7 +775,7 @@ int _alpm_remove_packages(alpm_handle_t *handle, int run_ldconfig)
+ 		targ_count++;
+ 	}
+ 
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 	if(run_ldconfig) {
+ 		/* run ldconfig if it exists */
+ 		_alpm_ldconfig(handle);
+diff --git a/lib/libalpm/sync.c b/lib/libalpm/sync.c
+index 88f1fc6..ae54172 100644
+--- a/lib/libalpm/sync.c
++++ b/lib/libalpm/sync.c
+@@ -198,7 +198,7 @@ static alpm_list_t *check_replacers(alpm_handle_t *handle, alpm_pkg_t *lpkg,
+ }
+ 
+ /** Search for packages to upgrade and add them to the transaction. */
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ static
+ int SYMEXPORT do_alpm_sync_sysupgrade(alpm_handle_t *handle, int enable_downgrade, int core_update)
+ #else
+@@ -217,7 +217,7 @@ int SYMEXPORT alpm_sync_sysupgrade(alpm_handle_t *handle, int enable_downgrade)
+ 	for(i = _alpm_db_get_pkgcache(handle->db_local); i; i = i->next) {
+ 		alpm_pkg_t *lpkg = i->data;
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 		/* Skip regular packages in core update, and core packages in regular update */
+ 		if(core_update != alpm_pkg_is_core_package(lpkg)) {
+ 			continue;
+@@ -265,7 +265,7 @@ int SYMEXPORT alpm_sync_sysupgrade(alpm_handle_t *handle, int enable_downgrade)
+ 	return 0;
+ }
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ int SYMEXPORT alpm_sync_sysupgrade(alpm_handle_t *handle, int enable_downgrade)
+ {
+ 	return do_alpm_sync_sysupgrade(handle, enable_downgrade, 0);
+diff --git a/lib/libalpm/util.c b/lib/libalpm/util.c
+index ce28fd8..6f1c7c3 100644
+--- a/lib/libalpm/util.c
++++ b/lib/libalpm/util.c
+@@ -30,7 +30,7 @@
+ #include <errno.h>
+ #include <limits.h>
+ #include <sys/wait.h>
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ #include <sys/socket.h>
+ #endif
+ #include <fnmatch.h>
+@@ -485,7 +485,7 @@ static int _alpm_chroot_write_to_child(alpm_handle_t *handle, int fd,
+ 		_alpm_cb_io out_cb, void *cb_ctx)
+ {
+ 	ssize_t nwrite;
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	struct sigaction newaction, oldaction;
+ #endif
+ 
+@@ -497,7 +497,7 @@ static int _alpm_chroot_write_to_child(alpm_handle_t *handle, int fd,
+ 		}
+ 	}
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	/* ignore SIGPIPE in case the pipe has been closed */
+ 	newaction.sa_handler = SIG_IGN;
+ 	sigemptyset(&newaction.sa_mask);
+@@ -648,7 +648,7 @@ int _alpm_run_chroot(alpm_handle_t *handle, const char *cmd, char *const argv[],
+ 	/* Flush open fds before fork() to avoid cloning buffers */
+ 	fflush(NULL);
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	if(pipe(child2parent_pipefd) == -1) {
+ #else
+ 	if(socketpair(AF_UNIX, SOCK_STREAM, 0, child2parent_pipefd) == -1) {
+@@ -658,7 +658,7 @@ int _alpm_run_chroot(alpm_handle_t *handle, const char *cmd, char *const argv[],
+ 		goto cleanup;
+ 	}
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	if(pipe(parent2child_pipefd) == -1) {
+ #else
+ 	if(socketpair(AF_UNIX, SOCK_STREAM, 0, parent2child_pipefd) == -1) {
+@@ -822,7 +822,7 @@ cleanup:
+ 	return retval;
+ }
+ 
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ /** Run ldconfig in a chroot.
+  * @param handle the context handle
+  * @return 0 on success, 1 on error
+diff --git a/lib/libalpm/version.c b/lib/libalpm/version.c
+index 6b9d05d..17ff720 100644
+--- a/lib/libalpm/version.c
++++ b/lib/libalpm/version.c
+@@ -50,7 +50,7 @@ static void parseEVR(char *evr, const char **ep, const char **vp,
+ 	/* se points to version terminator */
+ 	se = strrchr(s, '-');
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	if(*s == '~') {
+ #else
+ 	if(*s == ':') {
+diff --git a/scripts/libmakepkg/lint_package/build_references.sh.in b/scripts/libmakepkg/lint_package/build_references.sh.in
+index a5fc455..4dd0c7b 100644
+--- a/scripts/libmakepkg/lint_package/build_references.sh.in
++++ b/scripts/libmakepkg/lint_package/build_references.sh.in
+@@ -38,7 +38,7 @@ warn_build_references() {
+ 		fi
+ 	done
+ 
+-	# Check for Windows-style MSYS2 root path
++	# Check for Windows-style CYGWIN root path
+ 	if find "${pkgdir}" -type f -print0 | xargs -0 grep -iFqI "$(cygpath -m /)" ; then
+ 		warning "$(gettext "Package contains reference to %s")" "\$(cygpath -m /)"
+ 	fi
+diff --git a/scripts/libmakepkg/util/pkgbuild.sh.in b/scripts/libmakepkg/util/pkgbuild.sh.in
+index 2d4dd2d..4687ca1 100644
+--- a/scripts/libmakepkg/util/pkgbuild.sh.in
++++ b/scripts/libmakepkg/util/pkgbuild.sh.in
+@@ -166,7 +166,7 @@ get_pkgbuild_all_split_attributes() {
+ ##
+ get_full_version() {
+ 	if (( epoch > 0 )); then
+-		if [[ -n $MSYSTEM ]]; then
++		if [[ "$OSTYPE" = "cygwin" ]]; then
+ 			printf "%s\n" "${epoch}~${pkgver}-${pkgrel}"
+ 		else
+ 			printf "%s\n" "$epoch:$pkgver-$pkgrel"
+diff --git a/scripts/libmakepkg/utils_fixed_path.sh.in b/scripts/libmakepkg/utils_fixed_path.sh.in
+index e3a06bc..15a32a3 100644
+--- a/scripts/libmakepkg/utils_fixed_path.sh.in
++++ b/scripts/libmakepkg/utils_fixed_path.sh.in
+@@ -1,4 +1,4 @@
+-if [[ -n "$MSYSTEM" ]]; then
++if [[ -n "$MSYSTEM" || "$OSTYPE" = "cygwin" ]]; then
+   readonly -a UTILS_NAME=('bsdtar'
+                           'bzip2'
+                           'bzr'
+diff --git a/scripts/makepkg.sh.in b/scripts/makepkg.sh.in
+index dad256c..14f914d 100644
+--- a/scripts/makepkg.sh.in
++++ b/scripts/makepkg.sh.in
+@@ -1207,7 +1207,7 @@ fi
+ 
+ pkgbase=${pkgbase:-${pkgname[0]}}
+ 
+-# MSYS2: lint_pkgbuild is very slow with cygwin bash, so make it opt-in
++# CYGWIN: lint_pkgbuild is very slow with cygwin bash, so make it opt-in
+ if (( MAKEPKG_LINT_PKGBUILD )); then
+ 	# check the PKGBUILD for some basic requirements
+ 	lint_pkgbuild || exit $E_PKGBUILD_ERROR
+@@ -1371,8 +1371,8 @@ mkdir -p "$srcdir"
+ chmod a-s "$srcdir"
+ cd_safe "$srcdir"
+ 
+-export MINGW_CHOST MINGW_PREFIX MINGW_PACKAGE_PREFIX
+-export DXSDK_DIR ACLOCAL_PATH PKG_CONFIG_PATH
++# export MINGW_CHOST MINGW_PREFIX MINGW_PACKAGE_PREFIX
++export ACLOCAL_PATH PKG_CONFIG_PATH
+ 
+ if (( !REPKG )); then
+ 	if (( NOEXTRACT && ! VERIFYSOURCE )); then
+diff --git a/src/pacman/pacman.c b/src/pacman/pacman.c
+index 33feca9..fd08e8f 100644
+--- a/src/pacman/pacman.c
++++ b/src/pacman/pacman.c
+@@ -1086,7 +1086,7 @@ static void cl_to_log(int argc, char *argv[])
+ int main(int argc, char *argv[])
+ {
+ 	int ret = 0;
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 	uid_t myuid = getuid();
+ #endif
+ 
+@@ -1132,7 +1132,7 @@ int main(int argc, char *argv[])
+ 		cleanup(ret);
+ 	}
+ 
+-#ifndef __MSYS__
++#ifndef __CYGWIN__
+ 	/* check if we have sufficient permission for the requested operation */
+ 	if(myuid > 0 && needs_root()) {
+ 		pm_printf(ALPM_LOG_ERROR, _("you cannot perform this operation unless you are root.\n"));
+@@ -1156,7 +1156,7 @@ int main(int argc, char *argv[])
+ 				if(line[nread - 1] == '\n') {
+ 					/* remove trailing newline */
+ 					line[nread - 1] = '\0';
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 					if (line[nread - 2] == '\r') {
+ 						/* remove trailing carriage returns */
+ 						line[nread - 2] = '\0';
+diff --git a/src/pacman/po/ja.po b/src/pacman/po/ja.po
+index 99b4e77..74c44cd 100644
+--- a/src/pacman/po/ja.po
++++ b/src/pacman/po/ja.po
+@@ -1500,22 +1500,22 @@ msgstr "コアシステムの更新を開始...\n"
+ 
+ #: src/pacman/sync.c:791
+ #, c-format
+-msgid "terminate other MSYS2 programs before proceeding\n"
+-msgstr "続行する前に他の MSYS2 プログラムを終了してください\n"
++msgid "terminate other CYGWIN programs before proceeding\n"
++msgstr "続行する前に他の CYGWIN プログラムを終了してください\n"
+ 
+ #: src/pacman/sync.c:796
+ #, c-format
+ msgid ""
+-"To complete this update all MSYS2 processes including this terminal will be "
++"To complete this update all CYGWIN processes including this terminal will be "
+ "closed. Confirm to proceed"
+ msgstr ""
+-"更新を完了するために、この端末を含む全ての MSYS2 プロセスが閉じられます。続行"
++"更新を完了するために、この端末を含む全ての CYGWIN プロセスが閉じられます。続行"
+ "しますか？"
+ 
+ #: src/pacman/sync.c:800
+ #, c-format
+-msgid "terminating MSYS2 processes failed\n"
+-msgstr "MSYS2 プロセスの終了に失敗しました\n"
++msgid "terminating CYGWIN processes failed\n"
++msgstr "CYGWIN プロセスの終了に失敗しました\n"
+ 
+ #: src/pacman/sync.c:717
+ #, c-format
+diff --git a/src/pacman/sighandler.c b/src/pacman/sighandler.c
+index 15f4350..45e39f3 100644
+--- a/src/pacman/sighandler.c
++++ b/src/pacman/sighandler.c
+@@ -21,7 +21,7 @@
+ #include <signal.h>
+ #include <unistd.h>
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ #include <termios.h>
+ #endif
+ 
+@@ -57,7 +57,7 @@ static void _reset_handler(int signum)
+  */
+ static void soft_interrupt_handler(int signum)
+ {
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	struct termios term;
+ #endif
+ 
+@@ -76,7 +76,7 @@ static void soft_interrupt_handler(int signum)
+ 		return;
+ 	}
+ 	alpm_unlock(config->handle);
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	/* restore input printing possibly disabled by core update */
+ 	if(tcgetattr(STDIN_FILENO, &term) == 0) {
+ 		term.c_lflag |= ECHO;
+diff --git a/src/pacman/sync.c b/src/pacman/sync.c
+index 2dd8e18..cd83773 100644
+--- a/src/pacman/sync.c
++++ b/src/pacman/sync.c
+@@ -28,7 +28,7 @@
+ #include <sys/stat.h>
+ #include <fnmatch.h>
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ #include <termios.h>
+ #include <handle.h>
+ #include <trans.h>
+@@ -695,10 +695,10 @@ cleanup:
+ 	return ret;
+ }
+ 
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 
+ /* Tries to kill all cygwin processes except this one */
+-static int kill_all_other_msys_processes() {
++static int kill_all_other_cygwin_processes() {
+ 	DIR *dir;
+ 	struct dirent *ent;
+ 	char self_winpid[50];
+@@ -756,7 +756,7 @@ static int kill_all_other_msys_processes() {
+ 	if (!found_one)
+ 		return 0;
+ 
+-	setenv("MSYS2_ARG_CONV_EXCL", "*", 1);
++	// setenv("MSYS2_ARG_CONV_EXCL", "*", 1);
+ 	if (execvp(args[0], args) == -1) {
+ 		return -1;
+ 	}
+@@ -800,16 +800,16 @@ static int core_update(int *needed)
+ 	alpm_option_set_hookdirs(config->handle, NULL);
+ 
+ 	config->handle->trans->add = core;
+-	pm_printf(ALPM_LOG_WARNING, _("terminate other MSYS2 programs before proceeding\n"));
++	pm_printf(ALPM_LOG_WARNING, _("terminate other CYGWIN programs before proceeding\n"));
+ 	retval = sync_prepare_execute();
+ 	if(retval == 0) {
+ 		int response = 0;
+ 		do {
+-			response = yesno(_("To complete this update all MSYS2 processes including this terminal will be closed. Confirm to proceed"));
++			response = yesno(_("To complete this update all CYGWIN processes including this terminal will be closed. Confirm to proceed"));
+ 		} while(!response);
+ 
+-		if (kill_all_other_msys_processes() != 0) {
+-			pm_printf(ALPM_LOG_WARNING, _("terminating MSYS2 processes failed\n"));
++		if (kill_all_other_cygwin_processes() != 0) {
++			pm_printf(ALPM_LOG_WARNING, _("terminating CYGWIN processes failed\n"));
+ 			exit(1);
+ 		}
+ 		exit(0);
+@@ -820,7 +820,7 @@ static int core_update(int *needed)
+ 
+ static int sync_trans(alpm_list_t *targets)
+ {
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 	int found_core_updates = 0;
+ #endif
+ 	int retval = 0;
+@@ -845,7 +845,7 @@ static int sync_trans(alpm_list_t *targets)
+ 	}
+ 
+ 	if(config->op_s_upgrade) {
+-#ifdef __MSYS__
++#ifdef __CYGWIN__
+ 		if((retval = core_update(&found_core_updates))) {
+ 			return retval;
+ 		}

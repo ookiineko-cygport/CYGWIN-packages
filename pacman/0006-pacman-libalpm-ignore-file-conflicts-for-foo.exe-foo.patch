@@ -1,7 +1,7 @@
-From 62febd801bfec2fd732ee0272e85904092cf6822 Mon Sep 17 00:00:00 2001
+From 291bc5f948693cced307d1eba5b39cad561bde2d Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Fri, 21 May 2021 22:55:24 +0200
-Subject: [PATCH 07/N] pacman/libalpm: ignore file conflicts for foo.exe ->
+Subject: [PATCH 06/N] pacman/libalpm: ignore file conflicts for foo.exe ->
  foo renames
 
 In case a file "foo.exe" gets renamed to "foo" the msys2 .exe

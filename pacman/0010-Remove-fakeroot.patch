@@ -1,7 +1,7 @@
-From bd4961e6882df9c4f087cb99de0284eb22a4ae55 Mon Sep 17 00:00:00 2001
+From e1433728eea9dddeac0ab8ea25773a027303c1ee Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Fri, 21 May 2021 23:02:23 +0200
-Subject: [PATCH 14/N] Remove fakeroot
+Subject: [PATCH 10/N] Remove fakeroot
 
 Currently we don't have fakeroot, so let's allow building without it.  Most of
 the patching is currently done in 0000-pacman-msysize.patch, these are just some

@@ -1,102 +1,64 @@
-# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
 # Contributor: Martell Malone <martellmalone@gmail.com>
 # Contributor: Ray Donnelly <mingw.android@gmail.com>
 
 pkgname=pacman
 pkgver=6.0.1
 pkgrel=25
-pkgdesc="A library-based package manager with dependency support (MSYS2 port)"
+pkgdesc="A library-based package manager with dependency support (CYGWIN port)"
 arch=('i686' 'x86_64')
 url="https://www.archlinux.org/pacman/"
 license=('GPL')
-depends=('bash>=4.2.045'
-         'gettext'
-         'gnupg'
-         'curl'
-         'pacman-mirrors'
-         'msys2-keyring'
-         'which'
-         'bzip2'
-         'xz'
-         'zstd')
-checkdepends=('python')
-makedepends=('asciidoc'
-             'doxygen'
-             'git'
-             'gcc'
-             'meson'
-             'ninja'
-             'gettext-devel'
-             'heimdal-devel'
-             'libarchive-devel'
-             'libcurl-devel'
-             'libgpgme-devel'
-             'libsqlite-devel'
-             'libunistring-devel')
 backup=("etc/pacman.conf"
-        "etc/makepkg.conf"
-        "etc/makepkg_mingw.conf")
+        "etc/makepkg.conf")
 _commit="0a6fecd07271a54d9009ea7204c0e6288a44212b"
 source=(pacman-${pkgver}::git+https://gitlab.archlinux.org/pacman/pacman.git#commit=${_commit}
-        "pacman.conf"
-        "makepkg.conf"
-        "makepkg_mingw.conf"
-        "makepkg-mingw"
         0001-Msysize.patch
         0002-More-debugging-info.patch
         0003-Core-update.patch
         0004-Remove-ldconfig.patch
         0005-Change-the-epoch-separator.patch
-        0006-makepkg-avoid-creating-.tar-files-with-extended-attr.patch
-        0007-pacman-libalpm-ignore-file-conflicts-for-foo.exe-foo.patch
-        0008-Change-default-answer-of-all-queries-to-yes.patch
-        0009-Use-pipe-instead-of-socket.patch
-        0010-pacman-make-file-list-comparisons-between-packages-c.patch
-        0011-Translate-MSYS2-specific-messages-into-Japanese.patch
-        0012-Workaround-compressing-packages-with-bsdtar-under-Ac.patch
-        0013-Fix-asciidoc-argparse.patch
-        0014-Remove-fakeroot.patch
-        0015-Remove-sudo.patch
-        0016-Use-msys-tools.patch
-        0017-Export-CC-and-CXX-variables-explicitly.patch
-        0018-pacman.c-handle-cr-on-stdin-as-well.patch
-        0019-Add-a-CI-job.patch
-        0020-Strip-static-libraries-as-well.patch
-        0021-Fix-building-staticlibs-with-LTO.patch
-        0022-fixup-Export-CC-and-CXX-variables-explicitly.patch
-        0023-Make-lint_pkgbuild-opt-in-via-MAKEPKG_LINT_PKGBUILD-.patch
-        0024-libmakepkg-fix-compatibility-with-bash-5.2-globskipd.patch)
-validpgpkeys=('6645B0A8C7005E78DB1D7864F99FFE0FEAE999BD'  # Allan McRae <allan@archlinux.org>
-              'B8151B117037781095514CA7BBDFFC92306B1121') # Andrew Gregory (pacman) <andrew@archlinux.org>
+        0006-pacman-libalpm-ignore-file-conflicts-for-foo.exe-foo.patch
+        0007-Use-pipe-instead-of-socket.patch
+        0008-Translate-CYGWIN-specific-messages-into-Japanese.patch
+        0009-Fix-asciidoc-argparse.patch
+        0010-Remove-fakeroot.patch
+        0011-Remove-sudo.patch
+        0012-Use-msys-tools.patch
+        0013-Export-CC-and-CXX-variables-explicitly.patch
+        0014-pacman.c-handle-cr-on-stdin-as-well.patch
+        0015-Strip-static-libraries-as-well.patch
+        0016-Fix-building-staticlibs-with-LTO.patch
+        0017-fixup-Export-CC-and-CXX-variables-explicitly.patch
+        0018-Make-lint_pkgbuild-opt-in-via-MAKEPKG_LINT_PKGBUILD-.patch
+        0019-libmakepkg-fix-compatibility-with-bash-5.2-globskipd.patch
+        0020-Cygwinize.patch
+        0021-Replace-use-of-the-GPGME_KEYLIST_MODE_LOCATE-alias.patch
+        0022-conf-remove-glibc.patch)
 sha256sums=('SKIP'
-            '26d141ead0b586e29ab6c49ffa45cf60eb2689f53f8e90c885ccd6d117e9ab67'
-            'c12da01ede663a4924d0817a0d1bd6082b1380383cfb74cc1cea08f9d73e4902'
-            '8cb6b244d39107afc6cff74d919708ffc58b903c42f82d050d1d49bbf31208ab'
-            '98198e1f0f252eae0560d271bee4b9149e127399dd0d3fd5d8d24579d9e0550f'
-            '5951434296d1ea551941db408bac367e4b014add1b77ab5eb5d249deb81f777b'
-            '1975fb6d1a0d4cc3c54caefb80b719b471b8cf797d4850a082a8d03aa2ba6278'
-            '0cfc5332c3033321ff840b2399d80087416201a3100ea4ff868d3fdb29e35420'
-            '97818a36b5a687626c70b782beda024761511c9c95b3ab829acecae1835107eb'
-            '4b35438da5967cb4556e08509f35f1fc30b4b63d808b583f28ce2ac6caf15c57'
-            '4dc0d8fee098933e92ae0b1fa4ea79cf755665929d4491ca6aa19b8d72475d8e'
-            '725a128e9182253b886323ab4cf4557e09a22a3b7e7df6864709c2684b576990'
-            '3c3bd339c540e5a56bb5109c7ebadfe95f59f8d2c81082655ca929788db62320'
-            '160d132fa9f1b92f0e47bc5b0144b53c7a4c8b3a95b0d72906ec37e2dd638272'
-            'c0daf020a2cfbaeedf1a97ebfc65a8ee6299fb44867b3ee42fd60fe66199ec57'
-            'd0921fba5290fa1a7ffeff541b5c24a231c343a8b52c7bf10010598527265d47'
-            '4a6efe93984db6148a47d7d4a2256a2ce2bd64822c9f3e6a6d29a8c035107ef8'
-            '95d53e8f91060676b5b2aaae3e20ec0da76412997de6b8cda60e2cdbf4118757'
-            '67ba3c03714bece0b1a5df395c29e8dfe7a1b8dee96c3e3272b08dabd7b362f5'
-            '9073851459696a62a494f91a2421fa87f8e6554a953962db16cb87de9204c66e'
-            'a9b4897445e94e30ca6a1f3e47b061983e14505d1e8fe8d85944310e3f316731'
-            '7b86f89d9619258f4dfbdcf2b431dbc96a2a84628dc8ebbbe0356dec31b8f67f'
-            '4caa52fa3f806ca3ad0b0f3b3f497a3fd3910b2c1224ea0a39b8a21df8740f95'
-            '2480fcee75268d2f952c05e3fb46c0b7e9e9f533e7bc5a5bb53ec7536293e924'
-            '534c0a48e18e6fb935b19bbea64e44f531d9fa49e9634c3717810b76061ba498'
-            '4f8db01c932f592479dc0019eeb494bee8afc4a46e068de372df43de6e63e65c'
-            '2debaf890678f07503dca1368869ef975ab53099b682232661e202b66d55ccd1'
-            '335f3d23cdac35a203044e594053a84f9fbad3fb6ae3c6977aab9b06cf34a3e3'
-            '0da1d2c6670ce1475af6ac81005285d7854f48b03c0a01e1ee6c96ad76f12b93')
+            '87b6965a33b0cd3c081f63618c306d71eea62213e2557eb465b09ac239e6a607'
+            '32a23ef1e3f609df18e8b8c67c2562dfe0186fd92877cb26b4fad3c6c972550e'
+            'c3f7633bb953cee24869be06cea223c3115e37ab285e84bab81d9d9c5abb82fc'
+            '2a31dbed5f627601f8c2f5e585fa4710dab01d996c85e19fd59179b697382cd1'
+            'b4a193eaf9f6f889e1047159c30784cd4eb89b47b4a45554eaae7a3755e0c57c'
+            '9926f23fa84ae222a8e9da83dd037c2a93916a6c8184ff56a5ace69bea2d9cf1'
+            'cacc4b236b09aa7551ddda86e29053252f87550d0a1681db20dcd38eb6497cdf'
+            'e8fd54f916db2e8d9254d2951ca3df5054e520ea82e7965180ed1999262b5859'
+            '9fcae9f1418a9fe9b0ef10c11b5535199265c3b0d455d7fe6d9349229b5c153d'
+            'e279fbfc99eb606fd738c2e3c457c57d10f92d019ce990c401626736295d18cc'
+            '9cf619322392b061f840e8a7d3cb99a36e42834bc1ce1211f1625dcfe6f17aeb'
+            '784762909bc53609eb5b0681b74bf36542e4ae2314b5ec9dc35bb0e5f94fcd6a'
+            '08604500a8ff5b19e81934f0c7d44dd97c45be65c4a72688c7462c77607d58da'
+            '729ecf8560d95bb6f3356c946b80c3994cc94d2cecb4c1eb09f2c876066a3a6b'
+            '38229ca9e7d340cdea98b5846a7df64edfbbf6247304d8241dac503575fb2e6c'
+            'e116763437a81cde0333a87de90432f1483d93d8de9b0aa2b0541beb0f3e92ae'
+            '4706e852bd42102e69fa7228ca383008539fbdad5425dcc084dd48a502da4676'
+            'bdc3fbf66c25c1afdffd23b9c9fdc9d237236a62ec3ed8cb7510cd7dabab13ea'
+            '32cc157391e63c7a9c1abdd48b435627b12376d204ee8cbe2c406795ffffbc3b'
+            'd39b7e30994b4eeaa7ee09cd3785f7dce411fbdd1214f4b3d1e31a498d7e1260'
+            '147cf0fc027a2cfb825e7921c0f591cb0f1a96f90cf88c55a05e351ec159fed1'
+            'f07a8fab73b4bae523a9368b253d887727584b103a6309d5a5c80b12bcef45b6')
 
 apply_git_with_msg() {
   for _patch in "$@"
@@ -109,34 +71,28 @@ apply_git_with_msg() {
 prepare() {
   cd ${srcdir}/${pkgname}-${pkgver}
 
-  # fixup symlinks
-  git config core.symlinks true
-  git reset HEAD --hard
-
  apply_git_with_msg 0001-Msysize.patch \
   0002-More-debugging-info.patch \
   0003-Core-update.patch \
   0004-Remove-ldconfig.patch \
   0005-Change-the-epoch-separator.patch \
-  0006-makepkg-avoid-creating-.tar-files-with-extended-attr.patch \
-  0007-pacman-libalpm-ignore-file-conflicts-for-foo.exe-foo.patch \
-  0008-Change-default-answer-of-all-queries-to-yes.patch \
-  0009-Use-pipe-instead-of-socket.patch \
-  0010-pacman-make-file-list-comparisons-between-packages-c.patch \
-  0011-Translate-MSYS2-specific-messages-into-Japanese.patch \
-  0012-Workaround-compressing-packages-with-bsdtar-under-Ac.patch \
-  0013-Fix-asciidoc-argparse.patch \
-  0014-Remove-fakeroot.patch \
-  0015-Remove-sudo.patch \
-  0016-Use-msys-tools.patch \
-  0017-Export-CC-and-CXX-variables-explicitly.patch \
-  0018-pacman.c-handle-cr-on-stdin-as-well.patch \
-  0019-Add-a-CI-job.patch \
-  0020-Strip-static-libraries-as-well.patch \
-  0021-Fix-building-staticlibs-with-LTO.patch \
-  0022-fixup-Export-CC-and-CXX-variables-explicitly.patch \
-  0023-Make-lint_pkgbuild-opt-in-via-MAKEPKG_LINT_PKGBUILD-.patch \
-  0024-libmakepkg-fix-compatibility-with-bash-5.2-globskipd.patch
+  0006-pacman-libalpm-ignore-file-conflicts-for-foo.exe-foo.patch \
+  0007-Use-pipe-instead-of-socket.patch \
+  0008-Translate-CYGWIN-specific-messages-into-Japanese.patch \
+  0009-Fix-asciidoc-argparse.patch \
+  0010-Remove-fakeroot.patch \
+  0011-Remove-sudo.patch \
+  0012-Use-msys-tools.patch \
+  0013-Export-CC-and-CXX-variables-explicitly.patch \
+  0014-pacman.c-handle-cr-on-stdin-as-well.patch \
+  0015-Strip-static-libraries-as-well.patch \
+  0016-Fix-building-staticlibs-with-LTO.patch \
+  0017-fixup-Export-CC-and-CXX-variables-explicitly.patch \
+  0018-Make-lint_pkgbuild-opt-in-via-MAKEPKG_LINT_PKGBUILD-.patch \
+  0019-libmakepkg-fix-compatibility-with-bash-5.2-globskipd.patch \
+  0020-Cygwinize.patch \
+  0021-Replace-use-of-the-GPGME_KEYLIST_MODE_LOCATE-alias.patch \
+  0022-conf-remove-glibc.patch
 }
 
 build() {
@@ -170,33 +126,16 @@ package() {
   cd ${srcdir}/${pkgname}-${pkgver}
   DESTDIR=${pkgdir} meson install -C build-${CARCH}
 
-  # install Arch specific stuff
-  install -dm755 ${pkgdir}/etc
-  install -m644 ${srcdir}/pacman.conf ${pkgdir}/etc/pacman.conf
-
-  # Fixup .pc file
-  sed -i "s|/usr/.*libintl.a|-lintl|g" ${pkgdir}/usr/lib/pkgconfig/libalpm.pc
-
-  case "${CARCH}" in
-  i686)
-    mycarch="i686"
-    mychost="i686-pc-msys"
-    myflags="-march=i686"
-  ;;
-  x86_64)
-    mycarch="x86_64"
-    mychost="x86_64-pc-msys"
-    myflags="-march=x86-64"
-  ;;
-  esac
-
-  install -m644 ${srcdir}/makepkg.conf ${pkgdir}/etc/
-  install -m644 ${srcdir}/makepkg_mingw.conf ${pkgdir}/etc/
-  install -m755 ${srcdir}/makepkg-mingw ${pkgdir}/usr/bin/
+  mycarch="x86_64"
+  mychost="x86_64-pc-cygwin"
+  myflags="-march=x86-64"
 
   # set things correctly in the default conf file
   sed -i ${pkgdir}/etc/makepkg.conf \
     -e "s|@CARCH[@]|${mycarch}|g" \
     -e "s|@CHOST[@]|${mychost}|g" \
     -e "s|@CARCHFLAGS[@]|${myflags}|g"
+
+  # correct mode
+  chmod 775 `find ${pkgdir}/usr/share/zsh -type d`
 }

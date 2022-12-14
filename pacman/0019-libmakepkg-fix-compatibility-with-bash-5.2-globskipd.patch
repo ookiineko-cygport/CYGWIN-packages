@@ -1,7 +1,7 @@
-From 80f01df7fbc2c3424e191119915849d18b63523c Mon Sep 17 00:00:00 2001
+From 8683d23985ea847bff0451f8132e7e0c514525fd Mon Sep 17 00:00:00 2001
 From: Allan McRae <allan@archlinux.org>
 Date: Sun, 2 Oct 2022 11:40:52 +1000
-Subject: [PATCH 24/N] libmakepkg: fix compatibility with bash-5.2
+Subject: [PATCH 19/N] libmakepkg: fix compatibility with bash-5.2
  globskipdots
 
 Bash 5.2 has a new globskipdots option, which is enabled by default. The

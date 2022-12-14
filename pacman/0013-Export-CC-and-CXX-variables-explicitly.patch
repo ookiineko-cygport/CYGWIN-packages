@@ -1,7 +1,7 @@
-From 87d6d92836be00bbf65686df9a4911768bf76461 Mon Sep 17 00:00:00 2001
+From 962b67ccc5b0f24070e573e57d474419011965ec Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Sun, 23 May 2021 17:36:14 +0200
-Subject: [PATCH 17/N] Export CC and CXX variables explicitly
+Subject: [PATCH 13/N] Export CC and CXX variables explicitly
 
 See https://github.com/msys2/MSYS2-packages/pull/2501
 ---

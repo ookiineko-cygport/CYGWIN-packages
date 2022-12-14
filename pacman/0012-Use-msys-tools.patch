@@ -1,7 +1,7 @@
-From ace69722a5e67a453471d90482e3f4407390f842 Mon Sep 17 00:00:00 2001
+From 8a16a2be7b768a08ea8d1bc0723b99d8be55c263 Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Fri, 21 May 2021 23:03:54 +0200
-Subject: [PATCH 16/N] Use msys tools
+Subject: [PATCH 12/N] Use msys tools
 
 Some of the external tools pacman uses might unfortunately have incompatible
 versions in PATH, e.g. when using makepkg-mingw.  Let's always invoke them using

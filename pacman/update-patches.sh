@@ -8,7 +8,7 @@ die () {
 }
 
 cd "$(dirname "$0")" ||
-die "Could not cd to msys2-pacman/"
+die "Could not cd to cygwin-pacman/"
 
 git rev-parse --verify HEAD >/dev/null &&
 git update-index -q --ignore-submodules --refresh &&
@@ -21,20 +21,20 @@ die "Could not remove previous patches"
 
 base_tag=refs/tags/v"$(sed -ne 's/^pkgver=//p' <PKGBUILD)"
 msys2_branch=refs/heads/msys2-${base_tag#refs/tags/}
-url=https://github.com/msys2/msys2-pacman
+url=https://github.com/ookiineko-cygport/cygwin-pacman
 
-test -d msys2-pacman ||
-git clone --bare $url msys2-pacman ||
-die "Could not clone msys2-pacman"
+test -d cygwin-pacman ||
+git clone --bare $url cygwin-pacman ||
+die "Could not clone cygwin-pacman"
 
-git -C msys2-pacman fetch --no-tags $url $base_tag:$base_tag $msys2_branch:$msys2_branch
+git -C cygwin-pacman fetch --no-tags $url $base_tag:$base_tag $msys2_branch:$msys2_branch
 
 git -c core.abbrev=7 \
 	-c diff.renames=true \
 	-c format.from=false \
 	-c format.numbered=auto \
 	-c format.useAutoBase=false \
-	-C msys2-pacman \
+	-C cygwin-pacman \
 	format-patch \
 		--no-signature \
 		--topo-order \

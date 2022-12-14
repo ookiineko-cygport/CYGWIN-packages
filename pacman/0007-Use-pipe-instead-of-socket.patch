@@ -1,7 +1,7 @@
-From 2f6e643b87ad3d9d34436b8c5ac999e78d0a31bb Mon Sep 17 00:00:00 2001
+From e240c277d7caf5234b66d67e97e5c42d8bb5e1e3 Mon Sep 17 00:00:00 2001
 From: Christoph Reiter <reiter.christoph@gmail.com>
 Date: Fri, 21 May 2021 22:56:23 +0200
-Subject: [PATCH 09/N] Use pipe instead of socket
+Subject: [PATCH 07/N] Use pipe instead of socket
 
 ---
  lib/libalpm/util.c | 26 ++++++++++++++++++++++++++

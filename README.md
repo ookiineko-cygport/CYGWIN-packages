@@ -1,29 +1,36 @@
-<p align="center">
-  <a title="msys2.github.io" href="https://msys2.github.io"><img src="https://img.shields.io/website.svg?label=msys2.github.io&longCache=true&style=flat-square&url=http%3A%2F%2Fmsys2.github.io%2Findex.html&logo=github"></a><!--
-  -->
-  <a title="Join the chat at https://gitter.im/msys2/msys2" href="https://gitter.im/msys2/msys2"><img src="https://img.shields.io/badge/chat-on%20gitter-4db797.svg?longCache=true&style=flat-square&logo=gitter&logoColor=e8ecef"></a><!--
-  -->
-  <a title="GitHub Actions" href="https://github.com/msys2/MSYS2-packages/actions?query=workflow%3Amain"><img alt="'main' workflow Status" src="https://img.shields.io/github/workflow/status/msys2/MSYS2-packages/main?longCache=true&style=flat-square&label=build&logo=github"></a><!--
-  -->
-</p>
+# CYGWIN-packages
 
-# MSYS2-packages
+Package scripts for CYGWIN.
 
-Package scripts for MSYS2.
-
-To build these, run msys2_shell.cmd then from the bash prompt. Packages from
-the base-devel package is an implicit build time dependency.
-Make sure it is installed before attempting to build any package:
-
-    pacman -S --needed base-devel
-    cd ${package-name}
-    makepkg
+To build these, run `makepkg -sCLf` in the package directory from the bash prompt.
+Appropriate packages from the Cygwin are implicit build time and runtime dependencies.
+Make sure they are installed before attempting to build the corresponding package.
 
 To install the built package(s).
 
     pacman -U ${package-name}*.pkg.tar.xz
 
+## TODOs
+
+- [ ] Document required Cygwin packages for building/running every pacman package
+- [ ] Provide prebuilt packages
+
+## See also
+
+### Wiki
+
+[This page](../../wiki/Getting-started) explains how you can build & install pacman from scratch.
+
+It is useful when you don't have pacman installed on your Cygwin system and you don't know how to get one.
+
+### Special thanks
+
+This repository is based on the [MSYS2-packages][MSYS2-packages].
+
 ## License
 
-MSYS2-packages is licensed under BSD 3-Clause "New" or "Revised" License.
+CYGWIN-packages is licensed under BSD 3-Clause "New" or "Revised" License.
 A full copy of the license is provided in [LICENSE](LICENSE).
+
+[MSYS2-packages]:https://github.com/msys2/MSYS2-packages.git
+

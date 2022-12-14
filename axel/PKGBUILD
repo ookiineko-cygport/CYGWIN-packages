@@ -1,5 +1,6 @@
-# Maintainer: Yong-hyu, Ban <yhban@quendi.moe>
-# Maintainer: Eon Jeong <administrator@korea.ac.kr>
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Yong-hyu, Ban <yhban@quendi.moe>
+# Contributor: Eon Jeong <administrator@korea.ac.kr>
 
 pkgname=axel
 pkgver=2.17.11
@@ -9,8 +10,6 @@ arch=('i686' 'x86_64')
 license=('GPL')
 url="https://github.com/axel-download-accelerator/axel"
 groups=()
-depends=('openssl' 'gettext')
-makedepends=('openssl-devel' 'gettext-devel' 'autotools' 'gcc')
 options=()
 source=("https://github.com/axel-download-accelerator/axel/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.bz2")
 sha256sums=('14fc89fda49b9ab332ea2bb5592542eb5e5c4f3d2ea599a04fabda1ff5330992')

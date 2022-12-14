@@ -1,4 +1,5 @@
-# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=nano
 pkgver=7.0
@@ -8,19 +9,9 @@ arch=('i686' 'x86_64')
 license=('GPL')
 url="https://www.nano-editor.org"
 groups=('editors')
-depends=('file' 'libintl' 'ncurses' 'sh')
-makedepends=('autotools'
-             'gcc'
-             'ncurses-devel'
-             'libiconv-devel'
-             'gettext-devel')
 backup=('etc/nanorc')
-source=(https://www.nano-editor.org/dist/v7/${pkgname}-${pkgver}.tar.xz{,.asc})
-sha256sums=('8dd6eac38b2b8786d82681f0e1afd84f6b75210d17391b6443c437e451552149'
-            'SKIP')
-validpgpkeys=(
-  '168E6F4297BFD7A79AFD4496514BBE2EB8E1961F' # Benno Schulenberg <bensberg@telfort.nl>
-)
+source=(https://www.nano-editor.org/dist/v7/${pkgname}-${pkgver}.tar.xz)
+sha256sums=('8dd6eac38b2b8786d82681f0e1afd84f6b75210d17391b6443c437e451552149')
 
 prepare() {
   cd ${srcdir}/${pkgname}-${pkgver}
@@ -31,8 +22,7 @@ prepare() {
 build() {
   cd ${srcdir}/${pkgname}-${pkgver}
 
-  local CYGWIN_CHOST="${CHOST/-msys/-cygwin}"
-  ./configure --build=${CYGWIN_CHOST} \
+  ./configure --build=${CHOST} \
     --prefix=/usr \
     --sysconfdir=/etc \
     --enable-color \

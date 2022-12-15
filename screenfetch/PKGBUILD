@@ -1,4 +1,5 @@
-# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=screenfetch
 _pkgname=screenFetch
@@ -8,8 +9,6 @@ pkgdesc="Bash screenshot information tool"
 arch=('any')
 url="https://github.com/KittyKatt/screenFetch"
 license=('GPL')
-depends=('bash')
-optdepends=('curl: screenshot uploading')
 #optdepends=('scrot: screenshot taking'
 #            'curl: screenshot uploading')
 source=(${_pkgname}-${pkgver}.tar.gz::https://github.com/KittyKatt/${_pkgname}/archive/v${pkgver}.tar.gz)

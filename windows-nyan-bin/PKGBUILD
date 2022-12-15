@@ -1,0 +1,17 @@
+_realname=nyan
+pkgname=windows-nyan-bin
+pkgver=1.0.3
+pkgrel=1
+pkgdesc="nyan - Colored cat command with syntax highlighting (Windows binary)"
+arch=('x86_64')
+license=('MIT')
+url='https://github.com/toshimaru/nyan'
+source=("release.zip"::"${url}/releases/download/v${pkgver}/${_realname}_Windows_x86_64.zip")
+sha256sums=('f64170a8187c4d1dbfa0c9cbe1d729634db03386288e866e3c3bf19f0177a702')
+
+package() {
+  cd "${srcdir}"
+  install -Dm755 nyan.exe "${pkgdir}/usr/bin/win-nyan.exe"
+  install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

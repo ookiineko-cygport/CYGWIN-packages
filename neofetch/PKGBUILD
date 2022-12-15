@@ -2,19 +2,20 @@
 _realname=neofetch
 pkgname=${_realname}
 pkgver=7.1.0
-pkgrel=2
+pkgrel=3
 pkgdesc="neofetch - A command-line system information tool written in bash 3.2+"
 arch=('any')
 license=('MIT')
 url='https://github.com/dylanaraps/neofetch'
-source=("${_realname}-${pkgver}.tar.gz"::"$url/archive/$pkgver.tar.gz")
+_commit="ccd5d9f52609bbdcd5d8fa78c4fdb0f12954125f"
+source=("$pkgname"::"git+https://github.com/dylanaraps/${pkgname}.git#commit=${_commit}")
 # noextract=("${_realname}-${pkgver}.tar.gz")
-sha256sums=('58a95e6b714e41efc804eca389a223309169b2def35e57fa934482a6b47c27e7')
+sha256sums=('SKIP')
 
 
 
 package() {
-  cd "${srcdir}/${_realname}-${pkgver}"
+  cd "${srcdir}/${_realname}"
   make PREFIX=${pkgdir}/usr install
   install -Dm644 LICENSE.md "${pkgdir}/usr/share/licenses/${_realname}/LICENSE"
 }

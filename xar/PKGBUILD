@@ -1,0 +1,48 @@
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Sick Codes <info at sick dot codes>
+# Contributor: yselkowitz <yselkowitz@e127d73d-b18e-4ae1-a744-a22e6a3ccd30>
+# Contributor: Daniel Meszaros <easimer@gmail.com>
+# Contributor: Bastien Dejean <nihilhill@gmail.com>
+# Contributor: solsTice d'Hiver <solstice.dhiver@gmail.com>
+# Contributor: Prurigro
+
+_realname=xar
+pkgname=xar-git
+pkgver=1.6.1
+pkgrel=5
+pkgdesc='eXtensible ARchive format'
+arch=('i686' 'x86_64')
+url='http://mackyle.github.io/xar/'
+_fork='https://github.com/tpoechtrager/xar'
+license=('custom:BSD')
+options=('!libtool')
+source=('git+https://github.com/tpoechtrager/xar.git'
+        "1.5.2-cygwin.patch")
+md5sums=('SKIP'
+         '4c4b938ba77005a0388bfc1f8ecbf304')
+
+prepare() {
+    cd "$srcdir/${_realname}/xar"
+
+    patch -p2 -i ${srcdir}/1.5.2-cygwin.patch
+}
+
+build() {
+    cd "$srcdir/${_realname}/xar"
+    ./autogen.sh \
+        --prefix=/usr \
+        --mandir=/usr/share/man \
+        CFLAGS="-I/usr/include/openssl-1.0" \
+        LDFLAGS="-L/usr/lib/openssl-1.0/lib"
+    make
+}
+
+package() {
+    cd "$srcdir/${_realname}/xar"
+    make DESTDIR="$pkgdir" install
+    install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+    sed -e 's#installed=no#installed=yes#' \
+		-e 's#cygxar#../bin/cygxar#' \
+		-i ${pkgdir}/usr/lib/libxar.la
+}

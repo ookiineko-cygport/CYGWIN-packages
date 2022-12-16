@@ -1,0 +1,155 @@
+--- origsrc/xar-1.5.2/Makefile.in	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/Makefile.in	2007-12-29 22:25:13.359375000 -0600
+@@ -25,11 +25,16 @@
+ CPPFLAGS := @CPPFLAGS@
+ CFLAGS := @CFLAGS@ 
+ A_CFLAGS := $(CFLAGS) 
++ifeq (pecoff, @abi@)
++S_CFLAGS := $(CFLAGS) -DPIC -DDLL_EXPORT
++else
+ S_CFLAGS := $(CFLAGS) -fPIC -DPIC
++endif
+ ifeq (macho, @abi@)
+ S_CFLAGS += -dynamic
+ endif
+ LDFLAGS := @LDFLAGS@ 
++EXEEXT := @EXEEXT@
+ 
+ prefix := @PREFIX@
+ bindir := @BINDIR@
+--- origsrc/xar-1.5.2/configure.ac	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/configure.ac	2007-12-29 22:25:13.375000000 -0600
+@@ -120,6 +120,11 @@
+ dnl to make happen otherwise.
+ AC_CANONICAL_HOST
+ case "${host}" in
++  *-*-cygwin*)
++	abi="pecoff"
++	RPATH=""
++	CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"
++	;;
+   *-*-darwin*)
+ 	abi="macho"
+ 	RPATH=""
+--- origsrc/xar-1.5.2/lib/Makefile.inc.in	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/lib/Makefile.inc.in	2007-12-29 23:37:55.562500000 -0600
+@@ -50,6 +50,14 @@
+ LIBXAR_LNAME :=
+ LIBXAR_L :=
+ endif
++ifeq (pecoff, @abi@)
++LIBRXAR_SNAME := cygrxar-@LIB_REV@.dll
++LIBRXAR_LNAME := librxar.dll.a
++LIBRXAR_L := @objroot@lib/$(LIBRXAR_LNAME)
++LIBXAR_SNAME := cygxar-@LIB_REV@.dll
++LIBXAR_LNAME := libxar.dll.a
++LIBXAR_L := @objroot@lib/$(LIBXAR_LNAME)
++endif
+ LIBXAR_LA := @objroot@lib/$(LIBXAR_LANAME)
+ LIBXAR_A := @objroot@lib/$(LIBXAR_ANAME)
+ LIBRXAR_S := @objroot@lib/$(LIBRXAR_SNAME)
+@@ -83,12 +91,18 @@
+ 	@INSTALL@ -m 0644 $(LIBXAR_INCS) $(DESTDIR)$(INCLUDEDIR)/xar
+ 	@INSTALL@ -d $(DESTDIR)$(LIBDIR)
+ ifeq (yes, @shared@)
++ifeq (pecoff, @abi@)
++	@INSTALL@ -d $(DESTDIR)$(BINDIR)
++	@INSTALL@ -m 0755 $(LIBXAR_S) $(DESTDIR)$(BINDIR)
++	@INSTALL@ -m 0644 $(LIBXAR_L) $(DESTDIR)$(LIBDIR)
++else
+ 	@INSTALL@ -m 0755 $(LIBXAR_S) $(DESTDIR)$(LIBDIR)
+ ifneq ($(words "" $(LIBXAR_LNAME)), 1)
+ 	rm -f $(DESTDIR)$(LIBDIR)/$(LIBXAR_LNAME)
+ 	ln -s $(LIBXAR_SNAME) $(DESTDIR)$(LIBDIR)/$(LIBXAR_LNAME)
+ endif
+ endif
++endif
+ ifeq (yes, @static@)
+ 	@INSTALL@ -m 0644 $(LIBXAR_A) $(DESTDIR)$(LIBDIR)
+ endif
+@@ -142,10 +156,14 @@
+ ifeq (aout, @abi@)
+ 	$(CC) -shared -o $@ $+
+ endif
++ifeq (pecoff, @abi@)
++	$(CC) $(LDFLAGS) -shared -Wl,--enable-auto-image-base,--out-implib,$(LIBRXAR_L) -o $@ $+ @LIBS@
++else
+ ifneq ($(words "" $(LIBRXAR_L)), 1)
+ 	rm -f $(LIBRXAR_L)
+ 	ln -s $(LIBRXAR_SNAME) $(LIBRXAR_L)
+ endif
++endif
+ 
+ $(LIBXAR_S) : $(LIBXAR_SRCS:@srcroot@%.c=@objroot@%.o)
+ 	@mkdir -p $(@D)
+@@ -158,10 +176,14 @@
+ ifeq (aout, @abi@)
+ 	$(CC) -shared -o $@ $+
+ endif
++ifeq (pecoff, @abi@)
++	$(CC) $(LDFLAGS) -shared -Wl,--enable-auto-image-base,--out-implib,$(LIBXAR_L) -o $@ $+ @LIBS@
++else
+ ifneq ($(words "" $(LIBXAR_L)), 1)
+ 	rm -f $(LIBXAR_L)
+ 	ln -s $(LIBXAR_SNAME) $(LIBXAR_L)
+ endif
++endif
+ 
+ ifeq (yes, @shared@)
+ LT_LIBXAR_SNAME := $(LIBXAR_SNAME)
+--- origsrc/xar-1.5.2/lib/archive.c	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/lib/archive.c	2007-12-29 22:25:13.375000000 -0600
+@@ -48,6 +48,7 @@
+ #include <sys/stat.h>
+ #include <arpa/inet.h> /* for ntoh{l,s} */
+ #include <inttypes.h>  /* for PRIu64 */
++#include <limits.h>
+ #include <libxml/xmlwriter.h>
+ #include <libxml/xmlreader.h>
+ #include <libxml/xmlstring.h>
+--- origsrc/xar-1.5.2/lib/ext2.c	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/lib/ext2.c	2007-12-29 22:25:13.375000000 -0600
+@@ -37,6 +37,9 @@
+ */
+ 
+ #include "config.h"
++#ifdef __CYGWIN__
++#define __USE_LINUX_IOCTL_DEFS
++#endif
+ #ifndef HAVE_ASPRINTF
+ #include "asprintf.h"
+ #endif
+--- origsrc/xar-1.5.2/lib/libxar.la.in.in	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/lib/libxar.la.in.in	2007-12-29 23:26:07.078125000 -0600
+@@ -8,7 +8,7 @@
+ dlname='@LIBXAR_SNAME@'
+ 
+ # Names of this library.
+-library_names='@LIBXAR_SNAME@ @LIBXAR_LNAME@'
++library_names='@LIBXAR_LNAME@'
+ 
+ # The name of the static archive.
+ old_library='@LIBXAR_ANAME@'
+--- origsrc/xar-1.5.2/lib/stat.c	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/lib/stat.c	2007-12-29 22:25:13.375000000 -0600
+@@ -63,6 +63,9 @@
+ #include <errno.h>
+ #include <libxml/hash.h>
+ #include <libxml/xmlstring.h>
++#ifdef __CYGWIN__
++#undef HAVE_SYS_ACL_H
++#endif
+ #ifdef HAVE_SYS_ACL_H
+ #include <sys/acl.h>
+ #endif
+--- origsrc/xar-1.5.2/src/Makefile.inc.in	2007-12-29 12:49:57.000000000 -0600
++++ src/xar-1.5.2/src/Makefile.inc.in	2009-06-15 23:21:35.730556500 -0500
+@@ -9,7 +9,7 @@ src_all : @objroot@src/xar @objroot@src/
+ 
+ src_install : @objroot@src/ixar
+ 	@INSTALL@ -d $(DESTDIR)$(BINDIR)
+-	@INSTALL@ -m 0755 $< $(DESTDIR)$(BINDIR)/xar
++	@INSTALL@ -m 0755 $< $(DESTDIR)$(BINDIR)/xar$(EXEEXT)
+ 	@INSTALL@ -d $(DESTDIR)$(MANDIR)/man1
+ 	@INSTALL@ -m 0644 @srcroot@src/xar.1 $(DESTDIR)$(MANDIR)/man1
+ 

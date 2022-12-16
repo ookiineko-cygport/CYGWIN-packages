@@ -1,0 +1,26 @@
+From 9015381103f926ced57da2bb0a2deddaea5be261 Mon Sep 17 00:00:00 2001
+From: "Daisuke Fujimura (fd0)" <booleanlabel@gmail.com>
+Date: Fri, 19 Jun 2020 10:07:48 +0900
+Subject: [PATCH] Cygwinize
+
+Signed-off-by: Ookiineko <chiisaineko@protonmail.com>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 3d40d7c..a9878b2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -64,7 +64,7 @@ AC_C_BIGENDIAN([AC_DEFINE([__BIG_ENDIAN__], [1], [big endian])],
+ # Check for operating system
+ AC_MSG_CHECKING([wether we need platform-specific build settings for ${host_os}])
+ case ${host_os} in
+-  *mingw32*|*cygwin*)
++  *mingw32*)
+     AC_MSG_RESULT([yes])
+     win32=true
+     ;;
+-- 
+2.39.0
+

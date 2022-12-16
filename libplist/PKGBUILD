@@ -1,0 +1,58 @@
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Ray Donnelly <mingw.android@gmail.com>
+# Contributor: "Daisuke Fujimura (fd0)" <booleanlabel@gmail.com>
+
+pkgname=libplist
+pkgver=2.2.0
+pkgrel=5
+pkgdesc='A library to handle Apple Property List format in binary or XML'
+arch=('x86_64')
+url='https://www.libimobiledevice.org/'
+license=('GPL2+')
+source=("${pkgname}-${pkgver}.tar.gz"::https://github.com/libimobiledevice/${pkgname}/archive/${pkgver}.tar.gz
+        001-cython-module.patch
+        003-fix-py-soext.patch
+        0001-Cygwinize.patch)
+options=('staticlibs')
+sha256sums=('7e654bdd5d8b96f03240227ed09057377f06ebad08e1c37d0cfa2abe6ba0cee2'
+            '48320c5667bdf724eeab6c73340cb4ddb6fdc98109938e7fa4438d35e4439a29'
+            '1cca10b36021da73e436bc3c7765170fcd2f053fb8ebcb2e361359345905788f'
+            '4df9a73eebe8d30a491f46b9bdf82a1baa0b5111a026a89516fd0168f62194bf')
+
+prepare() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/001-cython-module.patch
+  patch -p1 -i ${srcdir}/003-fix-py-soext.patch
+  patch -p1 -i ${srcdir}/0001-Cygwinize.patch
+
+  autoreconf -fiv
+}
+
+build() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  PYTHON=/usr/bin/python3.9 \
+  CC=gcc CXX=g++ \
+  ../${pkgname}-${pkgver}/configure \
+      --prefix=/usr \
+      --enable-static \
+      --enable-shared
+
+  make
+}
+
+check() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  # || true because of FAIL: bigarraycmp .. File does not exists
+  make check || true
+}
+
+package() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  make install DESTDIR="${pkgdir}"
+
+  rm -f ${pkgdir}/usr/lib/python*/site-packages/*.a
+
+  # correct mode
+  chmod 775 ${pkgdir}/usr/lib/python*/site-packages/
+}

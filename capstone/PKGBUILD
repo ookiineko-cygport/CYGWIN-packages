@@ -1,0 +1,58 @@
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Michael Hansen <zrax0111 gmail com>
+
+pkgbase=capstone
+pkgname=("${pkgbase}"
+         "python-${pkgbase}")
+_pkgver=4.0.2
+pkgver=${_pkgver//-/}
+pkgrel=3
+pkgdesc='Lightweight multi-platform, multi-architecture disassembly framework'
+url='https://www.capstone-engine.org/index.html'
+arch=('x86_64')
+license=('BSD')
+source=("${pkgbase}-${_pkgver}.tar.gz::https://github.com/aquynh/capstone/archive/${_pkgver}.tar.gz"
+        "cygwin_python.patch")
+sha512sums=('7f93534517307b737422a8825b66b2a1f3e1cca2049465d60ab12595940154aaf843ba40ed348fce58de58b990c19a0caef289060eb72898cb008a88c470970e'
+            'd1c8fe85f366911a8eab81a08076752c860c4233f4d88048d73c225baeb9513ef9722bbf36483621413d0b958522ace8a68584e92d135532ba0f52d7ff3a9d9d')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  patch -p1 -i "${srcdir}/cygwin_python.patch"
+}
+
+build() {
+  mkdir -p build
+  cd build
+
+  cmake \
+    -DCMAKE_INSTALL_PREFIX="/usr" \
+    -DCMAKE_BUILD_TYPE=Release \
+    ../${pkgbase}-${_pkgver}
+
+  make
+}
+
+package_capstone() {
+  cd build
+
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 "${srcdir}/${pkgbase}-${_pkgver}/docs/README" -t "${pkgdir}/usr/share/doc/${pkgbase}"
+  install -Dm644 "${srcdir}/${pkgbase}-${_pkgver}/LICENSE.TXT" -t "${pkgdir}/usr/share/licenses/${pkgbase}"
+}
+
+package_python-capstone() {
+  depends=("capstone")
+  provides=("python3-${pkgbase}")
+  conflicts=("python3-${pkgbase}")
+  replaces=("python3-${pkgbase}")
+  cd ${pkgbase}-${_pkgver}/bindings/python
+
+  LIBCAPSTONE_PATH="${srcdir}/build/cygcapstone-4.dll" \
+  python3 setup.py install -O1 --root="${pkgdir}" --prefix="/usr"
+
+  install -Dm644 "${srcdir}/${pkgbase}-${_pkgver}/LICENSE.TXT" -t "${pkgdir}/usr/share/licenses/python-${pkgbase}"
+
+  # correct mode
+  chmod 775 ${pkgdir}/usr/lib/python3.9/site-packages
+}

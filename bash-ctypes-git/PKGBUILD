@@ -1,0 +1,52 @@
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Yaakov Selkowitz <yselkowi@redhat.com>
+# Contributor: 2ion
+
+_realname=ctypes.sh
+pkgname=bash-ctypes-git
+pkgver=r153.6982e6c
+pkgrel=1
+pkgdesc="FFI interface for Bash shell"
+arch=('i686' 'x86_64')
+license=('MIT')
+url="https://github.com/taviso/${_realname}"
+
+source=("${_realname}::git+${url}#branch=master"
+        "ctypes_bash_profile.sh"
+        "1.1-cygwin-no-undefined.patch"
+        "1.1-cygwin-dlsym.patch"
+        "1.1-cygwin-tests.patch")
+sha256sums=('SKIP'
+            '864210096fc805609f41eba6e64b0cbdb1aac65544fb1537727a1acafc847975'
+            '7f51a3027be3169b068b3796b7dbe9edd8975a9422d2b6cc360bc4045ab52605'
+            '610c3e4ec7ab82a09c76336c6e0c0c11164c786fb51a56ec39545e7f0dca9f20'
+            'a791802f20e0f5c1b2f29c95c62f4f1a9b0337f94a6323245bc92a8db8cf7969')
+install=${pkgname}.install
+
+pkgver() {
+  cd ${srcdir}/${_realname}
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd ${srcdir}/${_realname}
+  patch -p2 -i ${srcdir}/1.1-cygwin-no-undefined.patch
+  patch -p2 -i ${srcdir}/1.1-cygwin-dlsym.patch
+  patch -p2 -i ${srcdir}/1.1-cygwin-tests.patch
+  autoreconf -vifs
+}
+
+build() {
+  cd ${srcdir}/${_realname}
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd ${srcdir}/${_realname}
+  make DESTDIR=${pkgdir} install
+  install -Dm755 "${srcdir}/ctypes_bash_profile.sh" "${pkgdir}/etc/profile.d/ctypes.sh"
+}

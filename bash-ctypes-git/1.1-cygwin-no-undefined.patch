@@ -1,0 +1,42 @@
+--- origsrc/ctypes-sh-1.1/configure.ac	2016-07-18 09:12:50.000000000 -0500
++++ src/ctypes-sh-1.1/configure.ac	2019-01-07 21:27:45.496093700 -0600
+@@ -50,6 +50,7 @@ LT_SYS_MODULE_EXT
+ 
+ SAVED_CPPFLAGS="${CPPFLAGS}"
+ SAVED_LDFLAGS="${LDFLAGS}"
++SAVED_LIBS="${LIBS}"
+ 
+ # temporarily configure my build flags
+ CPPFLAGS="${CPPFLAGS} -I${srcdir}/include"
+@@ -67,6 +68,7 @@ AM_CONDITIONAL([ENABLE_STRUCTS], [test "
+ 
+ # Does enable -f work with a very simple plugin?
+ LDFLAGS="${LDFLAGS} -shared -fPIC"
++LIBS="${LIBS} -lbash"
+ 
+ AC_MSG_CHECKING([whether a minimal bash plugin compiles])
+ AC_LINK_IFELSE([AC_LANG_SOURCE([[
+@@ -141,6 +143,7 @@ AC_LINK_IFELSE([AC_LANG_SOURCE([[
+     AC_MSG_FAILURE([unable to build a test extension], 1)
+ ])
+ 
++LIBS="${SAVED_LIBS}"
+ LDFLAGS="${SAVED_LDFLAGS}"
+ CPPFLAGS="${SAVED_CPPFLAGS}"
+ 
+--- origsrc/ctypes-sh-1.1/src/Makefile.am	2016-07-18 09:12:50.000000000 -0500
++++ src/ctypes-sh-1.1/src/Makefile.am	2019-01-07 21:40:02.544921800 -0600
+@@ -2,10 +2,10 @@ lib_LTLIBRARIES       = ctypes.la
+ noinst_HEADERS        = types.h util.h
+ noinst_LTLIBRARIES    =
+ ctypes_la_SOURCES     = callback.c ctypes.c types.c unpack.c util.c 
+-ctypes_la_LDFLAGS     = -module -avoid-version -shared -export-symbols-regex '^.*_struct'
+-ctypes_la_CPPFLAGS    = -I../include
++ctypes_la_LDFLAGS     = -module -avoid-version -no-undefined -shared -export-symbols-regex '^.*_struct'
++ctypes_la_CPPFLAGS    = -I/usr/include/bash
+ ctypes_la_CFLAGS      = -std=gnu99 $(FFI_CFLAGS)
+-ctypes_la_LIBADD      = $(FFI_LIBS) $(LTLIBOBJS)
++ctypes_la_LIBADD      = $(FFI_LIBS) -lbash
+ if ENABLE_STRUCTS
+ ctypes_la_LIBADD     += libstruct.la
+ noinst_LTLIBRARIES   += libstruct.la

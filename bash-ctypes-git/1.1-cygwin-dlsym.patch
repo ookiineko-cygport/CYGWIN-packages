@@ -1,0 +1,18 @@
+--- origsrc/ctypes-sh-1.1/src/ctypes.c	2016-07-18 09:12:50.000000000 -0500
++++ src/ctypes-sh-1.1/src/ctypes.c	2019-01-07 21:39:31.990234300 -0600
+@@ -32,11 +32,15 @@ static void __attribute__((constructor))
+     // stored as strings rather than integers, as otherwise they can
+     // be interpreted as flags (they are small negative integers cast to
+     // void*).
++#ifdef RTLD_NEXT
+     snprintf(handle, sizeof handle, "%p", RTLD_NEXT);
+     bind_variable("RTLD_NEXT", handle, 0);
++#endif
+ 
++#ifdef RTLD_DEFAULT
+     snprintf(handle, sizeof handle, "%p", RTLD_DEFAULT);
+     bind_variable("RTLD_DEFAULT", handle, 0);
++#endif
+ }
+ 
+ // Decode a single rtld flag into a string. This is used to convert symbolic

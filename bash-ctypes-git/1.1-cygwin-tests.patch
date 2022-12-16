@@ -1,0 +1,42 @@
+--- src.orig/ctypes.sh/test/dlopen.sh  	2022-12-16 11:30:04.543877100 +0800
++++ src/ctypes.sh/test/dlopen.sh       	2022-12-16 11:33:43.084818900 +0800
+@@ -14,11 +14,11 @@
+ # discard error messages
+ exec 2> /dev/null
+ 
+-dlopen _invalid_lib_name_               && failure
+-dlopen libm.so.6                        || failure
+-dlopen libm.so.6 _INVALID_FLAG          && failure
+-dlopen libm.so.6 RTLD_LAZY _BAD_FLAG    || failure
+-dlopen                                  && failure
+-dlopen libm.so.6 RTLD_GLOBAL RTLD_LAZY  || failure
++dlopen _invalid_lib_name_                 && failure
++dlopen cygwin1.dll                        || failure
++dlopen cygwin1.dll _INVALID_FLAG          && failure
++dlopen cygwin1.dll RTLD_LAZY _BAD_FLAG    || failure
++dlopen                                    && failure
++dlopen cygwin1.dll RTLD_GLOBAL RTLD_LAZY  || failure
+ 
+ echo PASS
+--- origsrc/ctypes-sh-1.1/test/gtk.sh	2016-07-18 09:12:50.000000000 -0500
++++ src/ctypes-sh-1.1/test/gtk.sh	2019-01-07 22:01:36.803710900 -0600
+@@ -54,7 +54,7 @@ callback -n activate activate void point
+ taskset -p 1 $$ &> /dev/null
+ 
+ # Make libgtk-3 symbols available
+-dlopen libgtk-3.so.0
++dlopen cyggtk-3-0.dll
+ 
+ dlcall -n app -r pointer gtk_application_new "org.gtk.example" $G_APPLICATION_FLAGS_NONE
+ dlcall -r ulong g_signal_connect_data $app "activate" $activate $NULL $NULL 0
+--- origsrc/ctypes-sh-1.1/test/math.sh	2016-07-18 09:12:50.000000000 -0500
++++ src/ctypes-sh-1.1/test/math.sh	2019-01-07 22:12:17.287109300 -0600
+@@ -5,7 +5,7 @@ source ctypes.sh
+ set -e
+ 
+ # load the math library
+-dlopen libm.so || dlopen libm.so.6
++dlopen cygwin1.dll
+ 
+ function verify_result()
+ {

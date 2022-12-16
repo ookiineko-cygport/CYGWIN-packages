@@ -1,0 +1,36 @@
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+
+pkgname=libslirp
+pkgver=4.7.0
+pkgrel=1
+pkgdesc="General purpose TCP-IP emulator"
+arch=('x86_64')
+url="https://gitlab.freedesktop.org/slirp/libslirp"
+license=('BSD' 'MIT')
+source=("${url}/-/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.bz2")
+sha256sums=('358ce8b6ea59ec9deac937cc754f0115b992839e7b0cddf30ffb8f77dc21da82')
+
+prepare() {
+  cd ${srcdir}/${pkgname}-v${pkgver}
+
+}
+
+build() {
+  mkdir build && cd build
+
+  meson \
+    --prefix=/usr \
+    --buildtype=plain \
+    -Ddefault_library=both \
+    ../${pkgname}-v${pkgver}
+
+  meson compile
+}
+
+package() {
+  cd build
+  meson install --destdir="${pkgdir}"
+
+  install -Dm644 "${srcdir}/${pkgname}-v${pkgver}/COPYRIGHT" "${pkgdir}/usr/share/licenses/${pkgname}/COPYRIGHT"
+}

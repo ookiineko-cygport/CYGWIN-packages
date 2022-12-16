@@ -1,0 +1,45 @@
+# Maintainer: Ookiineko <chiisaineko@protonmail.com>
+# Contributor: Ray Donnelly <mingw.android@gmail.com>
+
+_realname=libusbmuxd
+pkgname=usbmuxd
+pkgver=2.0.2
+pkgrel=1
+pkgdesc='A client library to multiplex connections from and to iOS devices (mingw-w64)'
+arch=('x86_64')
+url='https://www.libimobiledevice.org/'
+license=('GPL2+')
+options=('staticlibs')
+source=(${_realname}-${pkgver}.tar.gz::"https://github.com/libimobiledevice/${_realname}/archive/${pkgver}.tar.gz"
+        0001-cygwin.patch)
+depends=("libplist")
+sha256sums=('8ae3e1d9340177f8f3a785be276435869363de79f491d05d8a84a59efc8a8fdc'
+            'd6cc18a1a2223ea16aceadf001bee01fe42ccd21d80f6ad6b7d3c7e5658dd32c')
+
+prepare() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  patch -p2 -i ${srcdir}/0001-cygwin.patch
+
+  NOCONFIGURE=1 ./autogen.sh
+}
+
+build() {
+  cd ${srcdir}/${_realname}-${pkgver}
+
+  ../${_realname}-${pkgver}/configure \
+    --prefix=/usr \
+    --enable-static \
+    --enable-shared
+
+  make
+}
+
+check() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  make check
+}
+
+package() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  make install DESTDIR="${pkgdir}"
+}
